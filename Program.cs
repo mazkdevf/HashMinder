@@ -1,79 +1,82 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace KeyAuth_Hash
 {
-    class Program
+    internal class Program
     {
-		static void Main(string[] args)
-		{
-			Console.Title = "KeyAuth.com";
-			string argument;
-			keyauthlogo();
-			Console.CursorLeft = 20;
-
-			argument = Console.ReadLine();
-
-			if (argument == "")
-            {
-				Environment.Exit(0);
-            }
-			else
-            {
-				
-            }
-
-			var checksum = GetMD5Checksum(argument);
-
-			Console.Clear();
-			Console.Title = "KeyAuth.com";
-			Console.WriteLine("");
-			Console.ForegroundColor = ConsoleColor.Green;
-			Console.WriteLine("             ██   ██ ███████ ██    ██  █████  ██    ██ ████████ ██   ██     ██████  ██████  ███    ███ ");
-			Console.WriteLine("             ██  ██  ██       ██  ██  ██   ██ ██    ██    ██    ██   ██    ██      ██    ██ ████  ████ ");
-			Console.WriteLine("             █████   █████     ████   ███████ ██    ██    ██    ███████    ██      ██    ██ ██ ████ ██ ");
-			Console.WriteLine("             ██  ██  ██         ██    ██   ██ ██    ██    ██    ██   ██    ██      ██    ██ ██  ██  ██ ");
-			Console.WriteLine("             ██   ██ ███████    ██    ██   ██  ██████     ██    ██   ██ ██  ██████  ██████  ██      ██ ");
-			Console.ForegroundColor = ConsoleColor.DarkGray;
-			Console.WriteLine("             -----------------------------------------------------------------------------------------");
-			Console.ForegroundColor = ConsoleColor.White;
-			Console.WriteLine("             |                           " + checksum + "                            |");
-			Console.ForegroundColor = ConsoleColor.DarkGray;
-			Console.WriteLine("             -------------------------------------HASH CHECKER----------------------------------------");
-			Console.WriteLine("");
-			Console.WriteLine("");
-			Console.ReadLine();
-		}
-
-		public static void keyauthlogo()
+        [STAThreadAttribute]
+        private static void Main(string[] args)
         {
-			Console.WriteLine("");
-			Console.WriteLine("             ---------------------------- PLEASE DRAG AND DROP FILE HERE------------------------------");
-			Console.WriteLine("             ██   ██ ███████ ██    ██  █████  ██    ██ ████████ ██   ██     ██████  ██████  ███    ███ ");
-			Console.WriteLine("             ██  ██  ██       ██  ██  ██   ██ ██    ██    ██    ██   ██    ██      ██    ██ ████  ████ ");
-			Console.WriteLine("             █████   █████     ████   ███████ ██    ██    ██    ███████    ██      ██    ██ ██ ████ ██ ");
-			Console.WriteLine("             ██  ██  ██         ██    ██   ██ ██    ██    ██    ██   ██    ██      ██    ██ ██  ██  ██ ");
-			Console.WriteLine("             ██   ██ ███████    ██    ██   ██  ██████     ██    ██   ██ ██  ██████  ██████  ██      ██ ");
-			Console.WriteLine("             --------------------------------------KeyAuth.com----------------------------------------");
-			Console.WriteLine("");
-		}
+            Console.Title = "KeyAuth.win";
+            keyauthlogo();
+            Console.CursorLeft = 20;
 
+            string filepath;
 
-		public static string GetMD5Checksum(string filename)
-		{
-			using (var md5 = System.Security.Cryptography.MD5.Create())
-			{
-				using (var stream = System.IO.File.OpenRead(filename))
-				{
-					var hash = md5.ComputeHash(stream);
-					return BitConverter.ToString(hash).Replace("-", "");
-				}
-			}
-		}
+            if (args.Length != 1)
+            {
+                Console.Write("Filepath (Drag and Drop supported): ");
+                filepath = Console.ReadLine();
+            }
+            else
+            {
+                filepath = args[0];
+            }
 
-	}
+            filepath = filepath.Replace("\"", String.Empty);
+
+            if (!File.Exists(filepath))
+            {
+                Console.Clear();
+                Console.WriteLine("Invalid File or Filepath Provided. ( " + filepath + " )");
+                Console.ReadLine();
+                Environment.Exit(2);
+            }
+
+            var md5hash = GetMD5Checksum(filepath);
+            Clipboard.SetText(md5hash);
+
+            Console.Clear();
+            keyauthlogo();
+
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("             |                           " + md5hash + "                            |");
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("                                                (Copied to Clipboard)");
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("             ------------------------------------------MD5-Hash--------------------------------------");
+            Console.ResetColor();
+
+            Console.ReadLine();
+        }
+
+        public static void keyauthlogo()
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("");
+            Console.WriteLine("             -----------------------------------------------------------------------------------------");
+            Console.WriteLine("             ██   ██ ███████ ██    ██  █████  ██    ██ ████████ ██   ██     ██████  ██████  ███    ███ ");
+            Console.WriteLine("             ██  ██  ██       ██  ██  ██   ██ ██    ██    ██    ██   ██    ██      ██    ██ ████  ████ ");
+            Console.WriteLine("             █████   █████     ████   ███████ ██    ██    ██    ███████    ██      ██    ██ ██ ████ ██ ");
+            Console.WriteLine("             ██  ██  ██         ██    ██   ██ ██    ██    ██    ██   ██    ██      ██    ██ ██  ██  ██ ");
+            Console.WriteLine("             ██   ██ ███████    ██    ██   ██  ██████     ██    ██   ██ ██  ██████  ██████  ██      ██ ");
+            Console.WriteLine("             -----------------------------------------KeyAuth.win-------------------------------------");
+            Console.WriteLine();
+            Console.ResetColor();
+        }
+
+        public static string GetMD5Checksum(string filename)
+        {
+            using (var md5 = System.Security.Cryptography.MD5.Create())
+            {
+                using (var stream = System.IO.File.OpenRead(filename))
+                {
+                    var hash = md5.ComputeHash(stream);
+                    return BitConverter.ToString(hash).Replace("-", "");
+                }
+            }
+        }
+    }
 }
