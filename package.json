@@ -1,0 +1,19 @@
+{
+  "name": "hashminder",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "crypto": "^1.0.1",
+    "electron": "^23.1.2"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.2.7"
+  }
+}
